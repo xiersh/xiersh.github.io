@@ -117,3 +117,7 @@ main li > p:first-child { margin-top: 0; }
 main li > p:last-child { margin-bottom: 0; }
 main sup { font-size: 0.72em; line-height: 0; }
 .pub-legend { font-size: 0.85em; color: var(--muted); }
+
+/* ---------- 数学公式（构建时渲染的 MathML） ---------- */
+.math.block { margin: 1.2em 0; overflow-x: auto; }
+.math.inline { white-space: nowrap; }

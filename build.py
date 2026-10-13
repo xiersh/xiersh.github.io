@@ -39,6 +39,24 @@ try:
 except ValueError:
     MD = MarkdownIt("commonmark").enable(["table", "strikethrough"])
 
+# 数学公式：行内 $...$、行间 $$...$$，构建时转成 MathML。
+# 公式以纯 HTML 形式写进页面，浏览器原生渲染，不需要 JavaScript。
+# 转换失败时保留原文，不中断构建。
+def _mathml(content, options):
+    from latex2mathml.converter import convert
+    display = (options.get("display_mode", False)
+               if isinstance(options, dict) else bool(options))
+    try:
+        return convert(content.strip(), display="block" if display else "inline")
+    except Exception:
+        return content
+
+try:
+    from mdit_py_plugins.dollarmath import dollarmath_plugin
+    MD.use(dollarmath_plugin, renderer=_mathml)
+except ImportError:
+    print("注意: 未安装 mdit-py-plugins / latex2mathml，公式将按原文输出")
+
 FM_RE = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*\n?", re.DOTALL)
 
 

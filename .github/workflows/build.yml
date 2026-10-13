@@ -23,8 +23,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependency
-        run: pip install markdown-it-py
+      - name: Install dependencies
+        run: pip install markdown-it-py mdit-py-plugins latex2mathml
 
       - name: Build site
         run: python3 build.py
