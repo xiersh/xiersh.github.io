@@ -1,0 +1,6 @@
+_site/
+.venv/
+.DS_Store
+preview.command
+preview.sh
+README.md

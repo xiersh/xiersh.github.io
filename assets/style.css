@@ -1,0 +1,119 @@
+/* Homepage — minimal white/black theme. */
+
+:root {
+  --text: #1a1a1a;
+  --muted: #777;
+  --line: #e4e4e4;
+  --accent: #0645ad;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0 auto;
+  max-width: 42em;
+  padding: 1.5em 1.25em 3em;
+  color: var(--text);
+  background: #fff;
+  font: 16px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- header / nav ---------- */
+.site-nav {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25em;
+  padding-bottom: 0.75em;
+  margin-bottom: 2.5em;
+  border-bottom: 1px solid var(--line);
+}
+.site-nav ul {
+  display: flex;
+  gap: 1.25em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.site-nav a.active { color: var(--text); font-weight: 600; }
+.lang-switch { margin-left: auto; font-size: 0.95em; }
+
+/* ---------- content ---------- */
+main h1 { font-size: 1.55em; line-height: 1.3; margin: 0 0 1em; }
+main h2 { font-size: 1.2em; margin: 2em 0 0.75em; }
+main h3 { font-size: 1.05em; margin: 1.6em 0 0.5em; }
+main p, main ul, main ol { margin: 0 0 1em; }
+main li { margin: 0.25em 0; }
+main img { max-width: 100%; }
+main hr { border: none; border-top: 1px solid var(--line); margin: 2.5em 0; }
+
+main code {
+  font: 0.9em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: #f4f4f4;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+main pre {
+  background: #f4f4f4;
+  padding: 0.9em 1em;
+  overflow-x: auto;
+  border-radius: 4px;
+}
+main pre code { background: none; padding: 0; }
+
+main blockquote {
+  margin: 0 0 1em;
+  padding-left: 1em;
+  color: var(--muted);
+  border-left: 2px solid var(--line);
+}
+
+main table { border-collapse: collapse; width: 100%; margin: 0 0 1em; }
+main th, main td {
+  border: 1px solid var(--line);
+  padding: 0.4em 0.7em;
+  text-align: left;
+}
+main th { background: #fafafa; }
+
+/* ---------- essay list ---------- */
+.essay-list { margin-top: 2.5em; }
+.essay-list h2 { margin-top: 0; }
+.essay-list ul { list-style: none; padding: 0; }
+.essay-list li { padding: 0.35em 0; border-bottom: 1px solid var(--line); }
+.essay-list .date { color: var(--muted); font-size: 0.9em; margin-left: 0.8em; }
+.badge {
+  display: inline-block;
+  margin-left: 0.6em;
+  padding: 0 0.45em;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--muted);
+  font-size: 0.78em;
+  vertical-align: middle;
+}
+
+/* ---------- footer ---------- */
+.site-footer {
+  margin-top: 4em;
+  padding-top: 1em;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.88em;
+}
+.site-footer p { margin: 0; }
+.site-footer a { color: var(--muted); text-decoration: underline; }
+
+/* ---------- publications on the homepage ---------- */
+/* 论文条目：标题 / 作者 / 出处各成一行，条目之间留白 */
+main > ul > li + li { margin-top: 0.9em; }
+main li > p { margin: 0.15em 0; }
+main li > p:first-child { margin-top: 0; }
+main li > p:last-child { margin-bottom: 0; }
+main sup { font-size: 0.72em; line-height: 0; }
+.pub-legend { font-size: 0.85em; color: var(--muted); }
