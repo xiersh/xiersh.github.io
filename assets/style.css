@@ -121,3 +121,9 @@ main sup { font-size: 0.72em; line-height: 0; }
 /* ---------- 数学公式（构建时渲染的 MathML） ---------- */
 .math.block { margin: 1.2em 0; overflow-x: auto; }
 .math.inline { white-space: nowrap; }
+
+/* ---------- 脚注 ---------- */
+.footnotes { margin-top: 2.5em; padding-top: 0.8em; border-top: 1px solid var(--line); font-size: 0.88em; color: var(--muted); }
+.footnotes-sep { display: none; }
+.footnote-ref a { text-decoration: none; }
+.footnote-backref { text-decoration: none; }

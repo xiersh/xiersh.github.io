@@ -53,9 +53,11 @@ def _mathml(content, options):
 
 try:
     from mdit_py_plugins.dollarmath import dollarmath_plugin
+    from mdit_py_plugins.footnote import footnote_plugin
     MD.use(dollarmath_plugin, renderer=_mathml)
+    MD.use(footnote_plugin)
 except ImportError:
-    print("注意: 未安装 mdit-py-plugins / latex2mathml，公式将按原文输出")
+    print("注意: 未安装 mdit-py-plugins / latex2mathml，公式和脚注将按原文输出")
 
 FM_RE = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*\n?", re.DOTALL)
 
@@ -206,6 +208,7 @@ def build():
         lang = lang_of(rel)
         url = dir_url(rel.parent.parts)
         content = MD.render(body)
+        content = add_heading_ids(content)
         # Notes 列表页：追加自动生成的文章清单
         if rel.name == "index.md" and rel.parent == Path("notes"):
             content += "\n" + essays_html(essays)
@@ -229,6 +232,37 @@ def build():
     shutil.copy2(STYLE_PATH, assets_out / "style.css")
 
     print(f"Built {len(files)} page(s) -> {OUT}")
+
+
+# ---------------- Heading anchors ----------------
+# 给所有标题自动添加 id（GitHub 风格），使任意小节都可以被链接：
+#   ## OOPSLA'26  ->  <h2 id="oopsla26">
+# 规则：取标题文字，转小写、去掉标点、空格变连字符；中文保留；
+# 重复标题自动加 -1、-2 后缀。
+
+def slugify(text):
+    import html as html_module
+    text = html_module.unescape(text)          # &amp; 等实体转回字符
+    text = re.sub(r"<[^>]+>", "", text)        # 去掉内部标签（链接、公式等）
+    text = text.strip().lower()
+    text = re.sub(r"[^\w\s-]", "", text)       # 去掉标点（保留文字/数字/空格/连字符）
+    text = re.sub(r"\s+", "-", text)
+    return text
+
+
+def add_heading_ids(html_text):
+    used = {}
+
+    def repl(m):
+        level, inner = m.group(1), m.group(2)
+        slug = slugify(inner) or "section"
+        count = used.get(slug, 0)
+        used[slug] = count + 1
+        if count:
+            slug = f"{slug}-{count}"
+        return f'<h{level} id="{slug}">{inner}</h{level}>'
+
+    return re.sub(r"<h([1-6])>(.*?)</h\1>", repl, html_text, flags=re.S)
 
 
 # ---------------- Watch mode ----------------

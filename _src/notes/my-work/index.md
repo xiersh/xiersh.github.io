@@ -1,8 +1,8 @@
 ---
-title: An Introduction to My Work
+title: Stories of Our Papers
 ---
 
-# An Introduction to My Work
+# Stories of Our Papers
 
 ## [OOPSLA'26](https://doi.org/10.1145/3839516)
 
