@@ -6,7 +6,7 @@ title: "2026 Automated Debugging of Datalog Programs (OOPSLA'26)"
 
 ## 幕后故事
 
-这篇工作的 idea 来源于左志强老师——这是比较显然的，因为他曾经做过 Datalog 的研究，也做过 SBFL (Spectrum-Based Fault Localization) 的研究。这篇工作的初稿是于2021年左右成型，但是第一版被拒了，可能一个很大的原因就是 Evaluation 没有在真实的 Datalog Bugs 上做测试。后面由于左老师专心于做其它工作了，这个工作就由我们团队继续做下去。
+这篇工作的 idea 来源于左志强老师——这是比较显然的，因为他曾经做过 Datalog 的研究，也做过 SBFL (Spectrum-Based Fault Localization) 的研究。这篇工作的初稿是于2021年左右成型，但是一直缺少真实的 Datalog Bug Benchmark 用于做比较扎实的 Evaluation。由于左老师后面专心于做其它工作了，他便把这个工作交给我们继续做下去。
 
 为了把这个工作做出来，钮鑫涛老师决定需要构建一个真实的 Datalog 故障的 Benchmark，而这个过程比较一波三折。一开始，钮老师是把这个任务交给计算机系的一位硕士生做，但是他没有做成。后来钮老师来了苏州校区的智能软件与工程学院之后，这个任务被交给了一个本科生大创的团队。在此之后的故事就交给卫佳申同学来讲述：
 
