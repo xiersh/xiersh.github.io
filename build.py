@@ -29,7 +29,8 @@ SITE_NAME = "Runshuo Xie"
 
 NAV = [
     ("Home", "/"),
-    ("Notes", "/notes/")
+    ("Notes", "/notes/"),
+    ("Stories", "/stories/")
     ]
 
 # ---------------- Markdown engine ----------------
@@ -71,20 +72,28 @@ def read_source(path: Path):
         for line in m.group(1).splitlines():
             if ":" in line:
                 key, _, value = line.partition(":")
-                meta[key.strip()] = value.strip()
+                value = value.strip()
+                # 去掉 YAML 风格的成对引号（title: "..." / '...'）
+                if (len(value) >= 2 and value[0] == value[-1]
+                        and value[0] in ("'", '"')):
+                    value = value[1:-1]
+                meta[key.strip()] = value
         text = text[m.end():]
     return meta, text
 
 
 # ---------------- Languages ----------------
-# 全站只有一套页面（默认英文）。唯一的例外是 Notes 里的随笔：
-#   _src/notes/<slug>/index.md   英文版（可省略）
-#   _src/notes/<slug>/zh.md      中文版（可省略）
+# 全站只有一套页面（默认英文）。例外是多语言文章栏目（随笔 notes、论文故事 stories）：
+#   _src/<栏目>/<slug>/index.md   英文版（可省略）
+#   _src/<栏目>/<slug>/zh.md      中文版（可省略）
 # 两个文件至少有一个；都有就是双语文章，页面互相链接。
 
+COLLECTIONS = {"notes": "All notes", "stories": "All stories"}
+
+
 def is_essay_zh(rel: Path) -> bool:
-    """True for _src/notes/<slug>/zh.md (the Chinese version of an essay)."""
-    return (len(rel.parts) == 3 and rel.parts[0] == "notes"
+    """True for _src/<collection>/<slug>/zh.md (the Chinese version)."""
+    return (len(rel.parts) == 3 and rel.parts[0] in COLLECTIONS
             and rel.name == "zh.md")
 
 
@@ -99,13 +108,13 @@ def dir_url(parts) -> str:
 
 # ---------------- Essays ----------------
 
-def collect_essays():
-    """Scan _src/notes/<slug>/ for index.md (EN) and/or zh.md (ZH)."""
+def collect_essays(collection):
+    """Scan _src/<collection>/<slug>/ for index.md (EN) and/or zh.md (ZH)."""
     essays = []
-    notes_dir = SRC / "notes"
-    if not notes_dir.is_dir():
+    coll_dir = SRC / collection
+    if not coll_dir.is_dir():
         return essays
-    for d in sorted(notes_dir.iterdir()):
+    for d in sorted(coll_dir.iterdir()):
         if not d.is_dir():
             continue
         slug = d.name
@@ -130,8 +139,8 @@ def collect_essays():
     return essays
 
 
-def essays_html(essays):
-    """Render the note list for the Notes index page."""
+def essays_html(essays, collection, heading):
+    """Render the entry list for a collection's index page."""
     if not essays:
         return ""
     items = []
@@ -143,13 +152,13 @@ def essays_html(essays):
             else:
                 title = f'{en["title"]} / {zh["title"]}'
             badge = "EN & 中文"
-            url = f'/notes/{e["slug"]}/'
+            url = f'/{collection}/{e["slug"]}/'
         elif en:
             title, badge = en["title"], "EN"
-            url = f'/notes/{e["slug"]}/'
+            url = f'/{collection}/{e["slug"]}/'
         else:
             title, badge = zh["title"], "中文"
-            url = f'/notes/{e["slug"]}/zh/'
+            url = f'/{collection}/{e["slug"]}/zh/'
         date = ""
         for v in (en, zh):
             if v and v["date"]:
@@ -158,24 +167,24 @@ def essays_html(essays):
         date_html = f'<span class="date">{date}</span>' if date else ""
         items.append(f'<li><a href="{url}">{title}</a>'
                      f'<span class="badge">{badge}</span>{date_html}</li>')
-    return ('<section class="essay-list">\n<h2>All notes</h2>\n<ul>\n'
+    return ('<section class="essay-list">\n<h2>' + heading + '</h2>\n<ul>\n'
             + "\n".join(items) + '\n</ul>\n</section>')
 
 
 def langswitch_html(rel: Path, essays_by_slug) -> str:
     """Per-essay language cross-link, only when the other version exists."""
     parts = rel.parts
-    if len(parts) == 3 and parts[0] == "notes":
-        slug = parts[1]
-        e = essays_by_slug.get(slug)
+    if len(parts) == 3 and parts[0] in COLLECTIONS:
+        collection, slug = parts[0], parts[1]
+        e = essays_by_slug.get((collection, slug))
         if not e:
             return ""
         if rel.name == "index.md" and e["zh"]:
             return (f'<span class="lang-switch">'
-                    f'<a href="/notes/{slug}/zh/">中文</a></span>')
+                    f'<a href="/{collection}/{slug}/zh/">中文</a></span>')
         if rel.name == "zh.md" and e["en"]:
             return (f'<span class="lang-switch">'
-                    f'<a href="/notes/{slug}/">English</a></span>')
+                    f'<a href="/{collection}/{slug}/">English</a></span>')
     return ""
 
 
@@ -194,8 +203,9 @@ def build():
         sys.exit(f"Source directory not found: {SRC}")
 
     files = sorted(p.relative_to(SRC) for p in SRC.rglob("*.md"))
-    essays = collect_essays()
-    essays_by_slug = {e["slug"]: e for e in essays}
+    essays_by_collection = {c: collect_essays(c) for c in COLLECTIONS}
+    essays_by_slug = {(c, e["slug"]): e
+                      for c, lst in essays_by_collection.items() for e in lst}
 
     if OUT.exists():
         shutil.rmtree(OUT)
@@ -209,9 +219,11 @@ def build():
         url = dir_url(rel.parent.parts)
         content = MD.render(body)
         content = add_heading_ids(content)
-        # Notes 列表页：追加自动生成的文章清单
-        if rel.name == "index.md" and rel.parent == Path("notes"):
-            content += "\n" + essays_html(essays)
+        # 栏目列表页：追加自动生成的文章清单
+        if rel.name == "index.md" and rel.parent.name in COLLECTIONS:
+            coll = rel.parent.name
+            content += "\n" + essays_html(essays_by_collection[coll],
+                                          coll, COLLECTIONS[coll])
         page = (template
                 .replace("{{lang}}", lang)
                 .replace("{{title}}", meta.get("title", SITE_NAME))
@@ -270,22 +282,32 @@ def add_heading_ids(html_text):
 # 有改动即自动重新编译（轮询方式，纯标准库，无需额外依赖）。
 
 def snapshot():
-    """All source file paths with their mtimes (_src/ and assets/)."""
+    """All source file paths with their mtimes (_src/, assets/, build.py)."""
     stamps = {}
     for base in (SRC, ROOT / "assets"):
         for p in base.rglob("*"):
             if p.is_file():
                 stamps[p] = p.stat().st_mtime
+    build_file = Path(__file__).resolve()
+    stamps[build_file] = build_file.stat().st_mtime
     return stamps
 
 
 def watch(interval=0.6):
     import time
+    build_file = Path(__file__).resolve()
     last = None
     try:
         while True:
             snap = snapshot()
             if snap != last:
+                # build.py 本身有更新：重启本进程加载新代码，
+                # 之后 Leo 再也不用手动重启预览来让功能改动生效。
+                if last is not None and snap.get(build_file) != last.get(build_file):
+                    print("  [watch] build.py 有更新，正在自动重启编译进程...")
+                    import os
+                    os.execv(sys.executable,
+                             [sys.executable, str(build_file), "--watch"])
                 build()
                 print(f"  [watch] {time.strftime('%H:%M:%S')} 已自动重新编译，"
                       f"刷新浏览器(Cmd+R)即可查看")
