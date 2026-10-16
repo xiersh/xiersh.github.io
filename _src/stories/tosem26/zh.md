@@ -30,7 +30,7 @@ Delta Debugging 的输入是一个 failing test-case $T_0 = \{1,2,\dots,n\}$，�
 
 这个想法一开始投 TOSEM 时有 60 页篇幅。一位审稿人认真读完了全文，也读懂了，写了整整 10 页的拒稿 PDF——他的意见是：这个 idea 本身不需要这么多形式化的篇幅来讲，presentation 还有很大的改进空间。后来导师把它拆成两部分：第一部分 Pending Schema Theory 发表在了 TSE'22[^Niu2022Theory]，第二部分就是这篇 TOSEM'26。
 
-近十年没能推进的，其实正是"怎么把这个想法讲清楚"这一步；这篇工作里，这部分主要由我负责。比如，把问题 formulate 成 Delta Debugging 的形式——这样一来，问题本身变得更 general，不至于局限在组合测试这个小圈子里；DD 的传统表述用的是序列，但集合的记号方便得多，于是全程改用集合；此外，引入 Minimal Hitting Set Generation 来描述 NoPend 里最难理解的那部分机制。
+近十年没能推进的，其实正是"怎么把这个想法讲清楚"这一步；这篇工作里，这部分主要由我负责。比如，把问题 formulate 成 Delta Debugging 的形式——这样一来，问题本身变得更 general，不至于局限在组合测试这个小圈子里；DD 的传统表述用的是序列，但集合的记号方便得多，于是全程改用集合；此外，引入 Minimal Hitting Set Generation 来描述我们算法中最难理解的那部分机制。
 
 这篇论文的 Evaluation 完成度不算高。不过这对结论的影响不大：Complete 和 Sound 是理论保证的，Evaluation 只需要回答 Scalability 这一个问题，它回答得还可以——只是也就到此为止了，所以代码的参考价值可能比较有限。做实验那会儿 DeepSeek R1 刚出来没多久，还没有 AI agent 这回事，不少代码靠手搓。ICT 这个 baseline 是一位审稿人要求加的，不过它和别的方法不太可比——它不是纯粹的故障定位，而是把覆盖表生成和故障定位揉在了一起。
 
