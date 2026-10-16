@@ -219,6 +219,11 @@ def build():
         url = dir_url(rel.parent.parts)
         content = MD.render(body)
         content = add_heading_ids(content)
+        # 文章目录：单篇文章页在标题后自动插入二级标题目录
+        if len(rel.parts) == 3 and rel.parts[0] in COLLECTIONS:
+            toc = toc_html(extract_toc(content), lang)
+            if toc:
+                content = inject_toc(content, toc)
         # 栏目列表页：追加自动生成的文章清单
         if rel.name == "index.md" and rel.parent.name in COLLECTIONS:
             coll = rel.parent.name
@@ -275,6 +280,40 @@ def add_heading_ids(html_text):
         return f'<h{level} id="{slug}">{inner}</h{level}>'
 
     return re.sub(r"<h([1-6])>(.*?)</h\1>", repl, html_text, flags=re.S)
+
+
+# ---------------- 文章目录 ----------------
+# 文章页（notes/stories 下的单篇文章）在构建时自动提取所有二级标题生成目录，
+# 插在正文标题（h1）下方，纯静态、零 JavaScript、无需手写维护。
+# 只有二级标题数 >= 3 时才生成目录，避免给短文章增加噪音。
+
+MIN_TOC_ITEMS = 3
+
+
+def extract_toc(html_text, min_items=MIN_TOC_ITEMS):
+    import html as html_module
+    items = []
+    for m in re.finditer(r'<h2 id="([^"]+)">(.*?)</h2>', html_text, flags=re.S):
+        anchor, inner = m.group(1), m.group(2)
+        title = html_module.unescape(re.sub(r"<[^>]+>", "", inner)).strip()
+        if title:
+            items.append((anchor, title))
+    return items if len(items) >= min_items else []
+
+
+def toc_html(items, lang):
+    if not items:
+        return ""
+    label = "目录" if lang == "zh" else "Contents"
+    lis = "\n".join(f'<li><a href="#{a}">{t}</a></li>' for a, t in items)
+    return (f'<nav class="toc">\n<p class="toc-title">{label}</p>\n'
+            f'<ul>\n{lis}\n</ul>\n</nav>')
+
+
+def inject_toc(html_text, toc):
+    """把目录插到正文标题（h1）之后；文章没有 h1 时保持原样。"""
+    return re.sub(r"(<h1[^>]*>.*?</h1>)", r"\1\n" + toc, html_text,
+                  count=1, flags=re.S)
 
 
 # ---------------- Watch mode ----------------
