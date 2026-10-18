@@ -42,10 +42,10 @@ Delta Debugging 的输入是一个 failing test-case $T_0 = \{1,2,\dots,n\}$，�
 
 “查询复杂度”这个概念来源于我的本科同学徐博研。由于博研是 TCS 方向的 PhD，我便向他请教了一下这个问题，这才意识到我们关心的问题应该用查询复杂度（Oracle 查询次数）来刻画，而不是 P/NP 框架下的时间复杂度。在此向他表示感谢🙏
 
-[^Zeller2022Simplifying]: Andreas Zeller and Ralf Hildebrandt. 2002. Simplifying and Isolating Failure-Inducing Input. *IEEE Trans. Softw. Eng.* 28, 2 (February 2002), 183–200. https://doi.org/10.1109/32.988498
+[^Zeller2022Simplifying]: Andreas Zeller and Ralf Hildebrandt. 2002. Simplifying and Isolating Failure-Inducing Input. *IEEE Trans. Softw. Eng.* 28, 2 (February 2002), 183–200. https://doi.org/10.1109/32.988498.
 
-[^Niu2022Theory]: X. Niu, H. Wu, C. Nie, Y. Lei and X. Wang, "A Theory of Pending Schemas in Combinatorial Testing," in IEEE Transactions on Software Engineering, vol. 48, no. 10, pp. 4119-4151, 1 Oct. 2022, https://doi.org/10.1109/TSE.2021.3113920.
+[^Niu2022Theory]: Xintao Niu, Huayao Wu, Changhai Nie, Yu Lei, and Xiaoyin Wang. 2022. A theory of pending schemas in combinatorial testing. *IEEE Transactions on Software Engineering*, 48, 10, 4119–4151. https://doi.org/10.1109/TSE.2021.3113920.
 
-[^Niu2013Identifying]: Xintao Niu, Changhai Nie, Yu Lei, and Alvin T.S. Chan. 2013. Identifying failure-inducing combinations using tuple relationship. In 2013 IEEE  Sixth International Conference on Software Testing, Verification and Validation Workshops, 271–280. https://doi.org/10.1109/ICSTW.2013.38.
+[^Niu2013Identifying]: Xintao Niu, Changhai Nie, Yu Lei, and Alvin T.S. Chan. 2013. Identifying failure-inducing combinations using tuple relationship. *IEEE Sixth International Conference on Software Testing, Verification and Validation Workshops*, 271–280. https://doi.org/10.1109/ICSTW.2013.38.
 
-[^Nie2011Minimal]: Changhai Nie and Hareton Leung. 2011. The minimal failure-causing schema of combinatorial testing. 2011 ACM Transactions on Software  Engineering and Methodology, 20, 4, 15:1–15:38. https://doi.org/10.1145/2000799.2000801.
+[^Nie2011Minimal]: Changhai Nie and Hareton Leung. 2011. The minimal failure-causing schema of combinatorial testing. *ACM Transactions on Software Engineering and Methodology*, 20, 4, 15:1–15:38. https://doi.org/10.1145/2000799.2000801.
