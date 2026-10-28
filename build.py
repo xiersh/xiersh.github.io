@@ -22,6 +22,9 @@ SRC = ROOT / "_src"
 OUT = ROOT / "_site"
 TEMPLATE_PATH = ROOT / "assets" / "template.html"
 STYLE_PATH = ROOT / "assets" / "style.css"
+# 网站统计代码（Statcounter 等）：存在即注入到每个页面的 </body> 前，
+# 想在全站启用/更换统计代码只需编辑这一个文件，无需改动任何文章。
+ANALYTICS_PATH = ROOT / "snippets" / "analytics.html"
 
 # ---------------- Site configuration ----------------
 
@@ -212,6 +215,10 @@ def build():
     OUT.mkdir(parents=True)
 
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
+    # 统计代码存在时，注入到每个页面 </body> 前（文件不存在则全站不注入）
+    analytics = ""
+    if ANALYTICS_PATH.is_file():
+        analytics = ANALYTICS_PATH.read_text(encoding="utf-8").strip()
 
     for rel in files:
         meta, body = read_source(SRC / rel)
@@ -236,6 +243,8 @@ def build():
                 .replace("{{nav}}", nav_html(url))
                 .replace("{{langswitch}}", langswitch_html(rel, essays_by_slug))
                 .replace("{{content}}", content))
+        if analytics:
+            page = page.replace("</body>", analytics + "\n</body>")
         # 中文版随笔输出到 /notes/<slug>/zh/
         if is_essay_zh(rel):
             out_path = OUT / rel.parent / "zh" / "index.html"
