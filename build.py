@@ -257,6 +257,11 @@ def build():
     assets_out.mkdir(exist_ok=True)
     shutil.copy2(STYLE_PATH, assets_out / "style.css")
 
+    # Publish presentation files while preserving their asset paths.
+    slides = ROOT / "assets" / "slides"
+    if slides.is_dir():
+        shutil.copytree(slides, assets_out / "slides")
+
     print(f"Built {len(files)} page(s) -> {OUT}")
 
 
